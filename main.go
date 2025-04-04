@@ -1,0 +1,94 @@
+package main
+
+import (
+	"database/sql"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+
+
+	"github.com/Swapnilgupta8585/CollabDocs/internal/database"
+
+	"github.com/joho/godotenv"
+	_"github.com/lib/pq"
+)
+
+type apiConfig struct{
+	db *database.Queries
+	secretToken string
+}
+
+
+func main() {
+
+	// Load environment variables
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	// Get port from environment variable
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Fatal("PORT is not set")
+	}
+
+	// Get database URL from environment variable
+	dbURL := os.Getenv("DB_URL")
+	if dbURL == "" {
+		log.Fatal("DB_URL is not set")
+	}
+
+	// Connect to database
+	dbConn, err := sql.Open("postgres", dbURL)
+	if err != nil {
+		log.Fatal("Error connecting to database:", err)
+	}
+	defer dbConn.Close()
+
+	// Test database connection
+	err = dbConn.Ping()
+	if err != nil {
+		log.Fatal("Error pinging database:", err)
+	}
+
+	fmt.Println("Connected to database")
+
+	// create database query
+	dbQueries := database.New(dbConn)
+
+	// create apiconfig to handle state of the program
+	cfg := apiConfig{
+		db: dbQueries,
+		secretToken:os.Getenv("SECRET_TOKEN"),
+	}
+
+	// Create a multiplexer
+	mux := http.NewServeMux()
+
+	// Register routes
+	mux.HandleFunc("GET /api/healthz", handleHealth)
+	mux.HandleFunc("DELETE /admin/reset", cfg.handleReset)
+	mux.HandleFunc("POST /api/users", cfg.handleCreateUsers)
+	mux.HandleFunc("POST /api/login", cfg.handleLogin)
+	mux.HandleFunc("PUT /api/users", cfg.handleUpdateUserCredentials)
+	mux.HandleFunc("POST /api/refresh", cfg.handleRefresh)
+	mux.HandleFunc("POST /api/revoke", cfg.handleRevoke)
+	
+
+
+	// Create a server
+	server := &http.Server{
+		Addr: fmt.Sprintf(":%s", port),
+		Handler: mux,
+	}
+
+	// Start the server
+	log.Printf("Starting server on port %s", port)
+	err = server.ListenAndServe()
+	log.Fatal(err)
+
+}
+
+
