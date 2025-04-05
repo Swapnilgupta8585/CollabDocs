@@ -9,7 +9,6 @@ import (
 
 
 	"github.com/Swapnilgupta8585/CollabDocs/internal/database"
-
 	"github.com/joho/godotenv"
 	_"github.com/lib/pq"
 )
@@ -70,13 +69,20 @@ func main() {
 	// Register routes
 	mux.HandleFunc("GET /api/healthz", handleHealth)
 	mux.HandleFunc("DELETE /admin/reset", cfg.handleReset)
+
 	mux.HandleFunc("POST /api/users", cfg.handleCreateUsers)
 	mux.HandleFunc("POST /api/login", cfg.handleLogin)
 	mux.HandleFunc("PUT /api/users", cfg.handleUpdateUserCredentials)
+
+
 	mux.HandleFunc("POST /api/refresh", cfg.handleRefresh)
 	mux.HandleFunc("POST /api/revoke", cfg.handleRevoke)
 	
-
+	mux.HandleFunc("POST /api/docs", cfg.handleCreateDocs)
+	mux.HandleFunc("GET /api/docs/{DocID}", cfg.handleGetDocs)
+	mux.HandleFunc("PUT /api/docs/{DocID}", cfg.handleUpdateDocs)
+	mux.HandleFunc("DELETE /api/docs/{DocID}", cfg.handleDeleteDocs)
+	mux.HandleFunc("POST /api/docs/{DocID}/share", cfg.handleDocShare)
 
 	// Create a server
 	server := &http.Server{
