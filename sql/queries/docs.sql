@@ -25,3 +25,7 @@ WHERE id=$2;
 -- name: DeleteDocByID :exec
 DELETE FROM docs
 WHERE id=$1;
+
+-- name: GetDocsByUserID :many
+SELECT * FROM docs
+WHERE user_id=$1;
