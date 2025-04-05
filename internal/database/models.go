@@ -11,6 +11,23 @@ import (
 	"github.com/google/uuid"
 )
 
+type Doc struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	UserID    uuid.UUID
+	Content   string
+}
+
+type Link struct {
+	Token      string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	DocID      uuid.UUID
+	Permission string
+	ExpiresAt  time.Time
+}
+
 type RefreshToken struct {
 	RefreshToken string
 	CreatedAt    time.Time
