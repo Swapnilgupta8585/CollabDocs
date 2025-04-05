@@ -67,6 +67,40 @@ func (q *Queries) GetDocByID(ctx context.Context, id uuid.UUID) (Doc, error) {
 	return i, err
 }
 
+const getDocsByUserID = `-- name: GetDocsByUserID :many
+SELECT id, created_at, updated_at, user_id, content FROM docs
+WHERE user_id=$1
+`
+
+func (q *Queries) GetDocsByUserID(ctx context.Context, userID uuid.UUID) ([]Doc, error) {
+	rows, err := q.db.QueryContext(ctx, getDocsByUserID, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Doc
+	for rows.Next() {
+		var i Doc
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.UserID,
+			&i.Content,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateContent = `-- name: UpdateContent :exec
 UPDATE docs
 SET content=$1, updated_at=NOW()
