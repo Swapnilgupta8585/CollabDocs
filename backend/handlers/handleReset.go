@@ -1,14 +1,15 @@
-package main
+package handlers
 
 import (
 	"fmt"
 	"net/http"
 	"os"
+
 )
 
 
 
-func (cfg *apiConfig)handleReset(w http.ResponseWriter, r *http.Request){
+func (h *Handler) HandleReset(w http.ResponseWriter, r *http.Request){
 
 	// dangerous endpoints should only be accessed in a local environment
 	if os.Getenv("PLATFORM") != "dev"{
@@ -17,7 +18,7 @@ func (cfg *apiConfig)handleReset(w http.ResponseWriter, r *http.Request){
 	}
 
 	// Delete all users from the database
-	err := cfg.db.DeleteAllUser(r.Context())
+	err := h.Cfg.Db.DeleteAllUser(r.Context())
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, "Error deleting the users from the DB", err)
 		return
