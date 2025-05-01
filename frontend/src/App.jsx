@@ -23,7 +23,6 @@ function App() {
               <Route path="/dashboard" element={<DashboardPage/>}/>
             </Route>
             
-            
           {/* Redirect to login by default */}
           <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>

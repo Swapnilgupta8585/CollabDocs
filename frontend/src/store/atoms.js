@@ -1,4 +1,5 @@
 import { atom } from "recoil";
+import { authService } from "../services/authServices";
 
 
 export const userState = atom({
@@ -14,4 +15,13 @@ export const authLoadingState = atom({
 export const authErrorState = atom({
     key:'authErrorState',
     default: null,
+});
+
+export const authState = atom({
+    key: 'authState',
+    default :{
+        authAccessToken : localStorage.getItem('access_token') || null,
+        authRefreshToken : localStorage.getItem('refresh_token') || null,
+        isAuthenticated : authService.isAuthenticated()
+    }
 });

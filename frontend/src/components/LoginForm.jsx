@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSetRecoilState } from "recoil";
-import { authErrorState, authLoadingState, userState } from "../store/atoms";
+import { authErrorState, authLoadingState, authState, userState } from "../store/atoms";
 import { Link, useNavigate } from "react-router-dom";
 import { authService } from "../services/authServices";
 
@@ -11,6 +11,7 @@ export default function LoginForm() {
   const setUser = useSetRecoilState(userState);
   const setLoading = useSetRecoilState(authLoadingState);
   const setError = useSetRecoilState(authErrorState);
+  const setAuth = useSetRecoilState(authState)
 
   const navigate = useNavigate();
 
@@ -21,6 +22,13 @@ export default function LoginForm() {
 
     try {
       const userData = await authService.login(email, password);
+      
+      setAuth({
+        authAccessToken : authService.getAccessToken,
+        authRefreshToken : authService.getRefreshToken,
+        isAuthenticated : true
+      });
+      
       setUser(userData);
       navigate("/dashboard");
     } catch (error) {

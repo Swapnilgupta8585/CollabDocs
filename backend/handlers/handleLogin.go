@@ -21,7 +21,7 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request){
 
 	// response payload
 	type response struct{
-		User User
+		User User  `json:"user"`
 		Token string `json:"token"`
 		RefreshToken string`json:"refresh_token"`
 

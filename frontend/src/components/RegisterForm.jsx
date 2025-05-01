@@ -31,9 +31,9 @@ export default function RegisterForm() {
     setError(null);
 
     try {
-      const userData = await authService.register( email, password);
+      const userData = await authService.register(email, password);
       setUser(userData);
-      navigate("/dashboard");
+      navigate("/login");
     } catch (error) {
       setError(
         typeof error === "string"
